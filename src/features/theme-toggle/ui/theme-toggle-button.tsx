@@ -1,0 +1,21 @@
+"use client";
+
+import { Moon, Sun } from "lucide-react";
+import { useTheme } from "@/shared/config/theme/theme-provider";
+
+export function ThemeToggleButton() {
+  const { resolvedTheme, toggleTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
+  const Icon = isDark ? Sun : Moon;
+
+  return (
+    <button
+      className="hover-jolt hover-outline-scan rounded-sm border border-line p-2.5 text-text"
+      type="button"
+      aria-label={isDark ? "Переключить на светлую тему" : "Переключить на тёмную тему"}
+      onClick={toggleTheme}
+    >
+      <Icon className="theme-icon-flicker" size={18} />
+    </button>
+  );
+}
