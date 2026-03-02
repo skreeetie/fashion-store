@@ -1,8 +1,7 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
-import { useEffect, useState } from "react";
-import { mockProducts } from "@/entities/product/model/mock-products";
+import { useGetProductsQuery } from "@/entities/product/api/product-api";
 import { ProductCard } from "@/entities/product/ui/product-card";
 import { ProductCardSkeleton } from "@/entities/product/ui/product-card-skeleton";
 import clsx from "clsx";
@@ -31,12 +30,8 @@ function FilterButton({ label, icon, active }: FilterButtonProps) {
 }
 
 export function CatalogView() {
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const timeoutId = window.setTimeout(() => setIsLoading(false), 1150);
-    return () => window.clearTimeout(timeoutId);
-  }, []);
+  const { data, isLoading, isFetching, isError } = useGetProductsQuery();
+  const loading = isLoading || isFetching;
 
   return (
     <section className="mt-10">
@@ -58,10 +53,16 @@ export function CatalogView() {
       </div>
 
       <div className="mt-9 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
-        {isLoading
+        {loading
           ? Array.from({ length: 9 }).map((_, idx) => <ProductCardSkeleton key={idx} />)
-          : mockProducts.map((product) => <ProductCard key={product.id} product={product} />)}
+          : data?.map((product) => <ProductCard key={product.id} product={product} />)}
       </div>
+
+      {isError ? (
+        <p className="mt-8 text-center text-sm text-muted">
+          Не удалось загрузить товары. Проверь подключение API и базы данных.
+        </p>
+      ) : null}
     </section>
   );
 }

@@ -1,6 +1,8 @@
 export type Product = {
   id: number;
+  slug: string;
   name: string;
   price: number;
-  tone: "cream" | "charcoal" | "sand" | "sky" | "olive" | "vanilla";
+  category: "ALL" | "CLOTHES" | "SHOES" | "ACCESSORIES";
+  imageUrl: string | null;
 };

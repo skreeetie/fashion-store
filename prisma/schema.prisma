@@ -1,0 +1,30 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum ProductCategory {
+  ALL
+  CLOTHES
+  SHOES
+  ACCESSORIES
+}
+
+model Product {
+  id          Int             @id @default(autoincrement())
+  slug        String          @unique
+  name        String
+  description String?
+  price       Int
+  category    ProductCategory @default(CLOTHES)
+  imageUrl    String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@map("products")
+}

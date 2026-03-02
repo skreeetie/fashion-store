@@ -1,0 +1,13 @@
+import { ProductDto } from "./product-contract";
+
+export const fallbackProducts: ProductDto[] = [
+  { id: 1, slug: "basic-jumper", name: "Базовый джемпер", price: 3200, category: "CLOTHES", imageUrl: null },
+  { id: 2, slug: "midi-dress", name: "Платье миди", price: 5900, category: "CLOTHES", imageUrl: null },
+  { id: 3, slug: "oversize-jacket", name: "Куртка оверсайз", price: 7500, category: "CLOTHES", imageUrl: null },
+  { id: 4, slug: "straight-jeans", name: "Прямые джинсы", price: 4500, category: "CLOTHES", imageUrl: null },
+  { id: 5, slug: "linen-shirt", name: "Рубашка льняная", price: 4000, category: "CLOTHES", imageUrl: null },
+  { id: 6, slug: "summer-suit", name: "Летний костюм", price: 6800, category: "CLOTHES", imageUrl: null },
+  { id: 7, slug: "knit-dress", name: "Трикотажное платье", price: 4700, category: "CLOTHES", imageUrl: null },
+  { id: 8, slug: "cotton-tshirt", name: "Футболка хлопковая", price: 1800, category: "CLOTHES", imageUrl: null },
+  { id: 9, slug: "classic-coat", name: "Пальто классическое", price: 9900, category: "CLOTHES", imageUrl: null },
+];
