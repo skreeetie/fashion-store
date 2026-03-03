@@ -1,4 +1,4 @@
-import { ShoppingBag } from "lucide-react";
+import { CartModal } from "@/features/cart/ui/cart-modal";
 import { ThemeToggleButton } from "@/features/theme-toggle/ui/theme-toggle-button";
 import clsx from "clsx";
 
@@ -41,13 +41,7 @@ export function Header() {
             ))}
           </nav>
           <ThemeToggleButton />
-          <button
-            className="hover-jolt rounded-sm border border-transparent p-1.5 text-muted"
-            type="button"
-            aria-label="Корзина"
-          >
-            <ShoppingBag size={22} />
-          </button>
+          <CartModal />
         </div>
       </div>
     </header>

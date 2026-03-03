@@ -1,4 +1,10 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
+import clsx from "clsx";
+import { toggleItemInCart, selectIsProductInCart } from "@/entities/cart/model/cart-slice";
+import { useAppDispatch, useAppSelector } from "@/shared/lib/hooks/redux";
 import { Product } from "../model/types";
 import { formatPrice } from "@/shared/lib/format-price";
 
@@ -7,6 +13,12 @@ type ProductCardProps = {
 };
 
 export function ProductCard({ product }: ProductCardProps) {
+  const [isHovered, setIsHovered] = useState(false);
+  const dispatch = useAppDispatch();
+  const isInCart = useAppSelector(selectIsProductInCart(product.id));
+
+  const cartLabel = isInCart ? (isHovered ? "Убрать из корзины" : "В корзине") : "В корзину";
+
   return (
     <article className="group flex flex-col">
       <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-card-bg">
@@ -28,10 +40,26 @@ export function ProductCard({ product }: ProductCardProps) {
         <p className="mt-1 text-[clamp(17px,1.6vw,36px)] text-muted">{formatPrice(product.price)}</p>
       </div>
       <button
-        className="hover-jolt hover-outline-scan mt-3 rounded-sm border border-line px-4 py-2 text-sm tracking-[0.08em] text-text"
+        className={clsx(
+          "hover-jolt hover-outline-scan mt-3 rounded-sm border px-4 py-2 text-sm tracking-[0.08em]",
+          isInCart ? "border-accent text-accent" : "border-line text-text",
+        )}
         type="button"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onClick={() =>
+          dispatch(
+            toggleItemInCart({
+              id: product.id,
+              slug: product.slug,
+              name: product.name,
+              price: product.price,
+              imageUrl: product.imageUrl,
+            }),
+          )
+        }
       >
-        В корзину
+        {cartLabel}
       </button>
     </article>
   );
