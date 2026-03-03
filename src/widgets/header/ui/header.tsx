@@ -26,8 +26,8 @@ function NavButton({ label, className }: NavButtonProps) {
 
 export function Header() {
   return (
-    <header className="border-b border-line pb-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+    <header className="sticky top-0 z-40 border-b border-line bg-bg/92 backdrop-blur-md">
+      <div className="mx-auto flex max-w-[1800px] flex-wrap items-center justify-between gap-4 px-6 py-6 sm:px-10 lg:px-16">
         <nav className="flex flex-wrap items-center gap-5 sm:gap-8">
           {leftLinks.map((link) => (
             <NavButton key={link} label={link} />
