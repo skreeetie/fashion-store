@@ -12,10 +12,15 @@ type UsePaginationQueryParams = {
 export function usePaginationQuery({ defaultPage = 1 }: UsePaginationQueryParams = {}) {
   const router = useRouter();
   const pathname = usePathname();
+  const safePathname = pathname ?? "/";
   const searchParams = useSearchParams();
+  const stableParams = useMemo(
+    () => searchParams ?? new URLSearchParams(),
+    [searchParams],
+  );
 
   const page = useMemo(() => {
-    const rawPage = searchParams.get(PAGE_PARAM);
+    const rawPage = stableParams.get(PAGE_PARAM);
     const parsedPage = Number(rawPage);
 
     if (!Number.isInteger(parsedPage) || parsedPage < 1) {
@@ -23,12 +28,12 @@ export function usePaginationQuery({ defaultPage = 1 }: UsePaginationQueryParams
     }
 
     return parsedPage;
-  }, [defaultPage, searchParams]);
+  }, [defaultPage, stableParams]);
 
   const setPage = useCallback(
     (nextPage: number) => {
       const safePage = Number.isInteger(nextPage) && nextPage > 0 ? nextPage : defaultPage;
-      const params = new URLSearchParams(searchParams.toString());
+      const params = new URLSearchParams(stableParams.toString());
 
       if (safePage === defaultPage) {
         params.delete(PAGE_PARAM);
@@ -37,10 +42,10 @@ export function usePaginationQuery({ defaultPage = 1 }: UsePaginationQueryParams
       }
 
       const query = params.toString();
-      const nextUrl = query ? `${pathname}?${query}` : pathname;
+      const nextUrl = query ? `${safePathname}?${query}` : safePathname;
       router.replace(nextUrl, { scroll: false });
     },
-    [defaultPage, pathname, router, searchParams],
+    [defaultPage, router, safePathname, stableParams],
   );
 
   return { page, setPage };
