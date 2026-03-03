@@ -1,10 +1,11 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useGetProductsQuery } from "@/entities/product/api/product-api";
 import { ProductCard } from "@/entities/product/ui/product-card";
 import { ProductCardSkeleton } from "@/entities/product/ui/product-card-skeleton";
+import { usePaginationQuery } from "@/shared/lib/hooks/use-pagination-query";
 import clsx from "clsx";
 
 const categories = ["Все", "Одежда", "Обувь", "Аксессуары"];
@@ -32,13 +33,23 @@ function FilterButton({ label, icon, active }: FilterButtonProps) {
 }
 
 export function CatalogView() {
-  const [page, setPage] = useState(1);
+  const { page, setPage } = usePaginationQuery({ defaultPage: 1 });
   const { data, isLoading, isFetching, isError } = useGetProductsQuery({
     page,
     perPage: ITEMS_PER_PAGE,
   });
   const loading = isLoading || isFetching;
   const totalPages = data?.meta.totalPages ?? 0;
+  const total = data?.meta.total ?? 0;
+  const shown = data?.products.length ?? 0;
+  const shownUntil = shown > 0 ? (page - 1) * ITEMS_PER_PAGE + shown : 0;
+  const remaining = Math.max(total - shownUntil, 0);
+
+  useEffect(() => {
+    if (totalPages > 0 && page > totalPages) {
+      setPage(totalPages);
+    }
+  }, [page, setPage, totalPages]);
 
   const visiblePages = useMemo(() => {
     if (totalPages <= 1) {
@@ -83,12 +94,19 @@ export function CatalogView() {
         </p>
       ) : null}
 
+      {!loading && total > 0 ? (
+        <p className="mt-10 text-center text-sm text-muted">
+          Показано: {shownUntil} из {total}. Осталось: {remaining}
+        </p>
+      ) : null}
+
       {!loading && totalPages > 1 ? (
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-2">
+        <div className="mt-4">
+          <div className="flex flex-wrap items-center justify-center gap-2">
           <button
             type="button"
             className="hover-jolt hover-outline-scan rounded-sm border border-line px-3 py-2 text-sm text-muted disabled:cursor-not-allowed disabled:opacity-50"
-            onClick={() => setPage((current) => Math.max(1, current - 1))}
+            onClick={() => setPage(Math.max(1, page - 1))}
             disabled={page === 1}
           >
             Назад
@@ -113,11 +131,12 @@ export function CatalogView() {
           <button
             type="button"
             className="hover-jolt hover-outline-scan rounded-sm border border-line px-3 py-2 text-sm text-muted disabled:cursor-not-allowed disabled:opacity-50"
-            onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
+            onClick={() => setPage(Math.min(totalPages, page + 1))}
             disabled={page === totalPages}
           >
             Вперед
           </button>
+          </div>
         </div>
       ) : null}
     </section>
