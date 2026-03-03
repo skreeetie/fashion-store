@@ -3,13 +3,23 @@ import { Product } from "../model/types";
 
 type ProductsResponse = {
   products: Product[];
+  meta: {
+    page: number;
+    perPage: number;
+    total: number;
+    totalPages: number;
+  };
+};
+
+type GetProductsArgs = {
+  page: number;
+  perPage: number;
 };
 
 export const productApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getProducts: builder.query<Product[], void>({
-      query: () => "/products",
-      transformResponse: (response: ProductsResponse) => response.products,
+    getProducts: builder.query<ProductsResponse, GetProductsArgs>({
+      query: ({ page, perPage }) => `/products?page=${page}&perPage=${perPage}`,
       providesTags: ["Products"],
     }),
   }),

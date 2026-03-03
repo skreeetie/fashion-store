@@ -13,4 +13,23 @@ export const productSchema = z.object({
 
 export const productsSchema = z.array(productSchema);
 
+export const productsQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  perPage: z.coerce.number().int().min(1).max(50).default(21),
+});
+
+export const productsMetaSchema = z.object({
+  page: z.number().int().min(1),
+  perPage: z.number().int().min(1),
+  total: z.number().int().min(0),
+  totalPages: z.number().int().min(0),
+});
+
+export const paginatedProductsSchema = z.object({
+  products: productsSchema,
+  meta: productsMetaSchema,
+});
+
 export type ProductDto = z.infer<typeof productSchema>;
+export type ProductsQuery = z.infer<typeof productsQuerySchema>;
+export type PaginatedProductsDto = z.infer<typeof paginatedProductsSchema>;

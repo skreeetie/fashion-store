@@ -1,5 +1,5 @@
 import { getProductsHandler } from "@/backend/entities/product/api/get-products.handler";
 
-export async function GET() {
-  return getProductsHandler();
+export async function GET(request: Request) {
+  return getProductsHandler(request);
 }

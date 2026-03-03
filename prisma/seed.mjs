@@ -2,19 +2,61 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const products = [
-  { slug: "basic-jumper", name: "Базовый джемпер", price: 3200, category: "CLOTHES" },
-  { slug: "midi-dress", name: "Платье миди", price: 5900, category: "CLOTHES" },
-  { slug: "oversize-jacket", name: "Куртка оверсайз", price: 7500, category: "CLOTHES" },
-  { slug: "straight-jeans", name: "Прямые джинсы", price: 4500, category: "CLOTHES" },
-  { slug: "linen-shirt", name: "Рубашка льняная", price: 4000, category: "CLOTHES" },
-  { slug: "summer-suit", name: "Летний костюм", price: 6800, category: "CLOTHES" },
-  { slug: "knit-dress", name: "Трикотажное платье", price: 4700, category: "CLOTHES" },
-  { slug: "cotton-tshirt", name: "Футболка хлопковая", price: 1800, category: "CLOTHES" },
-  { slug: "classic-coat", name: "Пальто классическое", price: 9900, category: "CLOTHES" },
+const categories = ["CLOTHES", "SHOES", "ACCESSORIES"];
+const productTemplates = [
+  "Базовый джемпер",
+  "Платье миди",
+  "Куртка оверсайз",
+  "Прямые джинсы",
+  "Рубашка льняная",
+  "Летний костюм",
+  "Трикотажное платье",
+  "Футболка хлопковая",
+  "Пальто классическое",
+  "Джинсовая куртка",
+  "Свитшот минимал",
+  "Лонгслив базовый",
+  "Кардиган мягкий",
+  "Брюки палаццо",
+  "Юбка макси",
+  "Кеды городские",
+  "Кроссовки раннер",
+  "Ботинки дерби",
+  "Сумка хобо",
+  "Ремень кожаный",
+  "Шарф кашемир",
 ];
 
+function slugify(value) {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9а-яё\s-]/gi, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
+function buildSeedProducts(count) {
+  return Array.from({ length: count }, (_, index) => {
+    const baseName = productTemplates[index % productTemplates.length];
+    const category = categories[index % categories.length];
+    const price = 1600 + (index % 12) * 450 + Math.floor(index / 12) * 120;
+    const sku = index + 1;
+    const name = `${baseName} ${sku}`;
+    const slug = `${slugify(baseName)}-${sku}`;
+
+    return {
+      slug,
+      name,
+      price,
+      category,
+    };
+  });
+}
+
 async function main() {
+  const products = buildSeedProducts(168);
+
   for (const product of products) {
     await prisma.product.upsert({
       where: { slug: product.slug },

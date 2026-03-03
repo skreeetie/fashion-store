@@ -10,9 +10,19 @@ type ProductRow = {
   imageUrl: string | null;
 };
 
-export async function getProductsFromDb(): Promise<ProductDto[]> {
+type GetProductsPageParams = {
+  skip: number;
+  take: number;
+};
+
+export async function getProductsPageFromDb({
+  skip,
+  take,
+}: GetProductsPageParams): Promise<ProductDto[]> {
   const products = (await prisma.product.findMany({
     orderBy: { id: "asc" },
+    skip,
+    take,
     select: {
       id: true,
       slug: true,
@@ -31,4 +41,8 @@ export async function getProductsFromDb(): Promise<ProductDto[]> {
     category: item.category,
     imageUrl: item.imageUrl,
   }));
+}
+
+export async function countProductsInDb(): Promise<number> {
+  return prisma.product.count();
 }

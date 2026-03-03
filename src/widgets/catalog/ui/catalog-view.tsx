@@ -1,12 +1,14 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
+import { useMemo, useState } from "react";
 import { useGetProductsQuery } from "@/entities/product/api/product-api";
 import { ProductCard } from "@/entities/product/ui/product-card";
 import { ProductCardSkeleton } from "@/entities/product/ui/product-card-skeleton";
 import clsx from "clsx";
 
 const categories = ["Все", "Одежда", "Обувь", "Аксессуары"];
+const ITEMS_PER_PAGE = 21;
 
 type FilterButtonProps = {
   label: string;
@@ -30,8 +32,25 @@ function FilterButton({ label, icon, active }: FilterButtonProps) {
 }
 
 export function CatalogView() {
-  const { data, isLoading, isFetching, isError } = useGetProductsQuery();
+  const [page, setPage] = useState(1);
+  const { data, isLoading, isFetching, isError } = useGetProductsQuery({
+    page,
+    perPage: ITEMS_PER_PAGE,
+  });
   const loading = isLoading || isFetching;
+  const totalPages = data?.meta.totalPages ?? 0;
+
+  const visiblePages = useMemo(() => {
+    if (totalPages <= 1) {
+      return [];
+    }
+
+    const start = Math.max(1, page - 2);
+    const end = Math.min(totalPages, start + 4);
+    const normalizedStart = Math.max(1, end - 4);
+
+    return Array.from({ length: end - normalizedStart + 1 }, (_, index) => normalizedStart + index);
+  }, [page, totalPages]);
 
   return (
     <section className="mt-10">
@@ -54,14 +73,52 @@ export function CatalogView() {
 
       <div className="mt-9 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
         {loading
-          ? Array.from({ length: 9 }).map((_, idx) => <ProductCardSkeleton key={idx} />)
-          : data?.map((product) => <ProductCard key={product.id} product={product} />)}
+          ? Array.from({ length: ITEMS_PER_PAGE }).map((_, idx) => <ProductCardSkeleton key={idx} />)
+          : data?.products.map((product) => <ProductCard key={product.id} product={product} />)}
       </div>
 
       {isError ? (
         <p className="mt-8 text-center text-sm text-muted">
           Не удалось загрузить товары. Проверь подключение API и базы данных.
         </p>
+      ) : null}
+
+      {!loading && totalPages > 1 ? (
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-2">
+          <button
+            type="button"
+            className="hover-jolt hover-outline-scan rounded-sm border border-line px-3 py-2 text-sm text-muted disabled:cursor-not-allowed disabled:opacity-50"
+            onClick={() => setPage((current) => Math.max(1, current - 1))}
+            disabled={page === 1}
+          >
+            Назад
+          </button>
+
+          {visiblePages.map((pageNumber) => (
+            <button
+              key={pageNumber}
+              type="button"
+              className={clsx(
+                "hover-jolt hover-outline-scan rounded-sm border px-3 py-2 text-sm",
+                pageNumber === page
+                  ? "border-accent text-accent"
+                  : "border-line text-muted",
+              )}
+              onClick={() => setPage(pageNumber)}
+            >
+              {pageNumber}
+            </button>
+          ))}
+
+          <button
+            type="button"
+            className="hover-jolt hover-outline-scan rounded-sm border border-line px-3 py-2 text-sm text-muted disabled:cursor-not-allowed disabled:opacity-50"
+            onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
+            disabled={page === totalPages}
+          >
+            Вперед
+          </button>
+        </div>
       ) : null}
     </section>
   );
