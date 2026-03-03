@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const productCategorySchema = z.enum(["ALL", "CLOTHES", "SHOES", "ACCESSORIES"]);
+export const catalogCategoryQuerySchema = z.enum(["all", "clothes", "shoes", "accessories"]);
 
 export const productSchema = z.object({
   id: z.number().int().positive(),
@@ -16,6 +17,7 @@ export const productsSchema = z.array(productSchema);
 export const productsQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   perPage: z.coerce.number().int().min(1).max(50).default(21),
+  category: catalogCategoryQuerySchema.default("all"),
 });
 
 export const productsMetaSchema = z.object({
@@ -33,3 +35,4 @@ export const paginatedProductsSchema = z.object({
 export type ProductDto = z.infer<typeof productSchema>;
 export type ProductsQuery = z.infer<typeof productsQuerySchema>;
 export type PaginatedProductsDto = z.infer<typeof paginatedProductsSchema>;
+export type CatalogCategoryQuery = z.infer<typeof catalogCategoryQuerySchema>;

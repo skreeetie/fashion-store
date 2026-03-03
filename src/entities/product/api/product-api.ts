@@ -14,12 +14,14 @@ type ProductsResponse = {
 type GetProductsArgs = {
   page: number;
   perPage: number;
+  category: "all" | "clothes" | "shoes" | "accessories";
 };
 
 export const productApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getProducts: builder.query<ProductsResponse, GetProductsArgs>({
-      query: ({ page, perPage }) => `/products?page=${page}&perPage=${perPage}`,
+      query: ({ page, perPage, category }) =>
+        `/products?page=${page}&perPage=${perPage}&category=${category}`,
       providesTags: ["Products"],
     }),
   }),

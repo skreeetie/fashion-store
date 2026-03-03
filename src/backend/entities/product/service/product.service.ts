@@ -1,5 +1,6 @@
 import { fallbackProducts } from "../model/fallback-products";
 import {
+  CatalogCategoryQuery,
   PaginatedProductsDto,
   ProductDto,
   paginatedProductsSchema,
@@ -46,17 +47,39 @@ function toPaginatedPayload({ products, page, perPage, total }: PaginateParams):
   };
 }
 
+function mapCategoryToDb(
+  category: CatalogCategoryQuery,
+): Exclude<ProductDto["category"], "ALL"> | undefined {
+  switch (category) {
+    case "clothes":
+      return "CLOTHES";
+    case "shoes":
+      return "SHOES";
+    case "accessories":
+      return "ACCESSORIES";
+    case "all":
+    default:
+      return undefined;
+  }
+}
+
 export async function getCatalogProducts(query: ProductsQuery): Promise<PaginatedProductsDto> {
   const page = query.page;
   const perPage = query.perPage;
+  const category = query.category;
   const skip = (page - 1) * perPage;
-  let productsPage = fallbackProducts.slice(skip, skip + perPage);
-  let total = fallbackProducts.length;
+  const dbCategory = mapCategoryToDb(category);
+  const filteredFallback =
+    dbCategory === undefined
+      ? fallbackProducts
+      : fallbackProducts.filter((item) => item.category === dbCategory);
+  let productsPage = filteredFallback.slice(skip, skip + perPage);
+  let total = filteredFallback.length;
 
   try {
     const [dbProducts, dbTotal] = await Promise.all([
-      getProductsPageFromDb({ skip, take: perPage }),
-      countProductsInDb(),
+      getProductsPageFromDb({ skip, take: perPage, category: dbCategory }),
+      countProductsInDb({ category: dbCategory }),
     ]);
 
     if (dbTotal > 0) {
@@ -64,8 +87,8 @@ export async function getCatalogProducts(query: ProductsQuery): Promise<Paginate
       total = dbTotal;
     }
   } catch {
-    productsPage = fallbackProducts.slice(skip, skip + perPage);
-    total = fallbackProducts.length;
+    productsPage = filteredFallback.slice(skip, skip + perPage);
+    total = filteredFallback.length;
   }
 
   const missingImageCount = productsPage.filter((product) => !product.imageUrl).length;

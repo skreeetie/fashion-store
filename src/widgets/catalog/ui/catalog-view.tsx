@@ -5,10 +5,15 @@ import { useEffect, useMemo } from "react";
 import { useGetProductsQuery } from "@/entities/product/api/product-api";
 import { ProductCard } from "@/entities/product/ui/product-card";
 import { ProductCardSkeleton } from "@/entities/product/ui/product-card-skeleton";
-import { usePaginationQuery } from "@/shared/lib/hooks/use-pagination-query";
+import { CatalogCategory, useCatalogQuery } from "@/shared/lib/hooks/use-catalog-query";
 import clsx from "clsx";
 
-const categories = ["Все", "Одежда", "Обувь", "Аксессуары"];
+const categories: { label: string; value: CatalogCategory }[] = [
+  { label: "Все", value: "all" },
+  { label: "Одежда", value: "clothes" },
+  { label: "Обувь", value: "shoes" },
+  { label: "Аксессуары", value: "accessories" },
+];
 const ITEMS_PER_PAGE = 21;
 
 type FilterButtonProps = {
@@ -33,10 +38,14 @@ function FilterButton({ label, icon, active }: FilterButtonProps) {
 }
 
 export function CatalogView() {
-  const { page, setPage } = usePaginationQuery({ defaultPage: 1 });
+  const { page, setPage, category, setCategory } = useCatalogQuery({
+    defaultPage: 1,
+    defaultCategory: "all",
+  });
   const { data, isLoading, isFetching, isError } = useGetProductsQuery({
     page,
     perPage: ITEMS_PER_PAGE,
+    category,
   });
   const loading = isLoading || isFetching;
   const totalPages = data?.meta.totalPages ?? 0;
@@ -71,8 +80,20 @@ export function CatalogView() {
 
       <div className="mt-10 border-y border-line py-5">
         <div className="flex flex-wrap items-center justify-center gap-8">
-          {categories.map((category, index) => (
-            <FilterButton key={category} label={category} active={index === 0} />
+          {categories.map((item) => (
+            <button
+              key={item.value}
+              type="button"
+              className={clsx(
+                "hover-jolt hover-outline-scan border-b px-2 pb-1 text-[17px]",
+                item.value === category
+                  ? "border-accent font-medium text-accent"
+                  : "border-transparent text-muted",
+              )}
+              onClick={() => setCategory(item.value)}
+            >
+              {item.label}
+            </button>
           ))}
         </div>
       </div>

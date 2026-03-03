@@ -13,16 +13,19 @@ type ProductRow = {
 type GetProductsPageParams = {
   skip: number;
   take: number;
+  category?: Exclude<ProductDto["category"], "ALL">;
 };
 
 export async function getProductsPageFromDb({
   skip,
   take,
+  category,
 }: GetProductsPageParams): Promise<ProductDto[]> {
   const products = (await prisma.product.findMany({
     orderBy: { id: "asc" },
     skip,
     take,
+    where: category ? { category } : undefined,
     select: {
       id: true,
       slug: true,
@@ -43,6 +46,12 @@ export async function getProductsPageFromDb({
   }));
 }
 
-export async function countProductsInDb(): Promise<number> {
-  return prisma.product.count();
+type CountProductsParams = {
+  category?: Exclude<ProductDto["category"], "ALL">;
+};
+
+export async function countProductsInDb({ category }: CountProductsParams = {}): Promise<number> {
+  return prisma.product.count({
+    where: category ? { category } : undefined,
+  });
 }

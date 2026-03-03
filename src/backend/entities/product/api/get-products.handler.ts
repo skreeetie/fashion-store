@@ -8,6 +8,7 @@ export async function getProductsHandler(request: Request) {
     const parsedQuery = productsQuerySchema.parse({
       page: url.searchParams.get("page") ?? undefined,
       perPage: url.searchParams.get("perPage") ?? undefined,
+      category: url.searchParams.get("category") ?? undefined,
     });
 
     const data = await getCatalogProducts(parsedQuery);
