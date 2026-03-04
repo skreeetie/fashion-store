@@ -9,6 +9,8 @@ export async function getProductsHandler(request: Request) {
       page: url.searchParams.get("page") ?? undefined,
       perPage: url.searchParams.get("perPage") ?? undefined,
       category: url.searchParams.get("category") ?? undefined,
+      sortBy: url.searchParams.get("sortBy") ?? undefined,
+      sortOrder: url.searchParams.get("sortOrder") ?? undefined,
     });
 
     const data = await getCatalogProducts(parsedQuery);

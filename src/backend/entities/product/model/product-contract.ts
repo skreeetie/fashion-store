@@ -2,6 +2,8 @@ import { z } from "zod";
 
 export const productCategorySchema = z.enum(["ALL", "CLOTHES", "SHOES", "ACCESSORIES"]);
 export const catalogCategoryQuerySchema = z.enum(["all", "clothes", "shoes", "accessories"]);
+export const catalogSortByQuerySchema = z.enum(["none", "price", "name"]);
+export const catalogSortOrderQuerySchema = z.enum(["asc", "desc"]);
 
 export const productSchema = z.object({
   id: z.number().int().positive(),
@@ -18,6 +20,8 @@ export const productsQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   perPage: z.coerce.number().int().min(1).max(50).default(21),
   category: catalogCategoryQuerySchema.default("all"),
+  sortBy: catalogSortByQuerySchema.default("none"),
+  sortOrder: catalogSortOrderQuerySchema.default("asc"),
 });
 
 export const productsMetaSchema = z.object({
@@ -36,3 +40,5 @@ export type ProductDto = z.infer<typeof productSchema>;
 export type ProductsQuery = z.infer<typeof productsQuerySchema>;
 export type PaginatedProductsDto = z.infer<typeof paginatedProductsSchema>;
 export type CatalogCategoryQuery = z.infer<typeof catalogCategoryQuerySchema>;
+export type CatalogSortByQuery = z.infer<typeof catalogSortByQuerySchema>;
+export type CatalogSortOrderQuery = z.infer<typeof catalogSortOrderQuerySchema>;

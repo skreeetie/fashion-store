@@ -1,4 +1,4 @@
-import { ProductDto } from "../model/product-contract";
+import { CatalogSortOrderQuery, CatalogSortByQuery, ProductDto } from "../model/product-contract";
 import { prisma } from "@/backend/shared/db/prisma";
 
 type ProductRow = {
@@ -14,15 +14,31 @@ type GetProductsPageParams = {
   skip: number;
   take: number;
   category?: Exclude<ProductDto["category"], "ALL">;
+  sortBy: CatalogSortByQuery;
+  sortOrder: CatalogSortOrderQuery;
 };
+
+function getOrderBy(sortBy: CatalogSortByQuery, sortOrder: CatalogSortOrderQuery) {
+  if (sortBy === "price") {
+    return { price: sortOrder } as const;
+  }
+
+  if (sortBy === "name") {
+    return { name: sortOrder } as const;
+  }
+
+  return { id: "asc" } as const;
+}
 
 export async function getProductsPageFromDb({
   skip,
   take,
   category,
+  sortBy,
+  sortOrder,
 }: GetProductsPageParams): Promise<ProductDto[]> {
   const products = (await prisma.product.findMany({
-    orderBy: { id: "asc" },
+    orderBy: getOrderBy(sortBy, sortOrder),
     skip,
     take,
     where: category ? { category } : undefined,

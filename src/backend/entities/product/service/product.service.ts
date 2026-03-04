@@ -1,6 +1,8 @@
 import { fallbackProducts } from "../model/fallback-products";
 import {
   CatalogCategoryQuery,
+  CatalogSortByQuery,
+  CatalogSortOrderQuery,
   PaginatedProductsDto,
   ProductDto,
   paginatedProductsSchema,
@@ -63,22 +65,54 @@ function mapCategoryToDb(
   }
 }
 
+function sortProducts(
+  items: ProductDto[],
+  sortBy: CatalogSortByQuery,
+  sortOrder: CatalogSortOrderQuery,
+): ProductDto[] {
+  if (sortBy === "none") {
+    return items;
+  }
+
+  const sorted = [...items];
+  const direction = sortOrder === "asc" ? 1 : -1;
+
+  sorted.sort((a, b) => {
+    if (sortBy === "price") {
+      return (a.price - b.price) * direction;
+    }
+
+    return a.name.localeCompare(b.name, "ru") * direction;
+  });
+
+  return sorted;
+}
+
 export async function getCatalogProducts(query: ProductsQuery): Promise<PaginatedProductsDto> {
   const page = query.page;
   const perPage = query.perPage;
   const category = query.category;
+  const sortBy = query.sortBy;
+  const sortOrder = query.sortOrder;
   const skip = (page - 1) * perPage;
   const dbCategory = mapCategoryToDb(category);
-  const filteredFallback =
+  const filteredFallbackBase =
     dbCategory === undefined
       ? fallbackProducts
       : fallbackProducts.filter((item) => item.category === dbCategory);
+  const filteredFallback = sortProducts(filteredFallbackBase, sortBy, sortOrder);
   let productsPage = filteredFallback.slice(skip, skip + perPage);
   let total = filteredFallback.length;
 
   try {
     const [dbProducts, dbTotal] = await Promise.all([
-      getProductsPageFromDb({ skip, take: perPage, category: dbCategory }),
+      getProductsPageFromDb({
+        skip,
+        take: perPage,
+        category: dbCategory,
+        sortBy,
+        sortOrder,
+      }),
       countProductsInDb({ category: dbCategory }),
     ]);
 

@@ -1,11 +1,15 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
-import { useEffect, useMemo } from "react";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useGetProductsQuery } from "@/entities/product/api/product-api";
 import { ProductCard } from "@/entities/product/ui/product-card";
 import { ProductCardSkeleton } from "@/entities/product/ui/product-card-skeleton";
-import { CatalogCategory, useCatalogQuery } from "@/shared/lib/hooks/use-catalog-query";
+import {
+  CatalogCategory,
+  CatalogSortBy,
+  useCatalogQuery,
+} from "@/shared/lib/hooks/use-catalog-query";
 import clsx from "clsx";
 
 const categories: { label: string; value: CatalogCategory }[] = [
@@ -15,37 +19,26 @@ const categories: { label: string; value: CatalogCategory }[] = [
   { label: "Аксессуары", value: "accessories" },
 ];
 const ITEMS_PER_PAGE = 21;
-
-type FilterButtonProps = {
-  label: string;
-  icon?: boolean;
-  active?: boolean;
-};
-
-function FilterButton({ label, icon, active }: FilterButtonProps) {
-  return (
-    <button
-      className={clsx(
-        "hover-jolt hover-outline-scan flex items-center gap-2 rounded-sm border border-line px-4 py-2 text-[17px] text-muted",
-        active && "text-accent",
-      )}
-      type="button"
-    >
-      <span>{label}</span>
-      {icon && <ChevronDown size={16} />}
-    </button>
-  );
-}
+const sortOptions: { label: string; value: Exclude<CatalogSortBy, "none"> }[] = [
+  { label: "Цена", value: "price" },
+  { label: "Название", value: "name" },
+];
 
 export function CatalogView() {
-  const { page, setPage, category, setCategory } = useCatalogQuery({
+  const { page, setPage, category, setCategory, sortBy, sortOrder, cycleSortBy } = useCatalogQuery({
     defaultPage: 1,
     defaultCategory: "all",
+    defaultSortBy: "none",
+    defaultSortOrder: "asc",
   });
+  const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
+  const sortMenuRef = useRef<HTMLDivElement | null>(null);
   const { data, isLoading, isFetching, isError } = useGetProductsQuery({
     page,
     perPage: ITEMS_PER_PAGE,
     category,
+    sortBy,
+    sortOrder,
   });
   const loading = isLoading || isFetching;
   const totalPages = data?.meta.totalPages ?? 0;
@@ -60,6 +53,32 @@ export function CatalogView() {
     }
   }, [page, setPage, totalPages]);
 
+  useEffect(() => {
+    if (!isSortMenuOpen) {
+      return;
+    }
+
+    const onOutsideClick = (event: MouseEvent) => {
+      if (!sortMenuRef.current?.contains(event.target as Node)) {
+        setIsSortMenuOpen(false);
+      }
+    };
+
+    const onEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsSortMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("mousedown", onOutsideClick);
+    window.addEventListener("keydown", onEscape);
+
+    return () => {
+      window.removeEventListener("mousedown", onOutsideClick);
+      window.removeEventListener("keydown", onEscape);
+    };
+  }, [isSortMenuOpen]);
+
   const visiblePages = useMemo(() => {
     if (totalPages <= 1) {
       return [];
@@ -71,6 +90,16 @@ export function CatalogView() {
 
     return Array.from({ length: end - normalizedStart + 1 }, (_, index) => normalizedStart + index);
   }, [page, totalPages]);
+
+  const currentSortLabel = useMemo(() => {
+    if (sortBy === "none") {
+      return "Сортировка";
+    }
+
+    return sortBy === "price" ? "Цена" : "Название";
+  }, [sortBy]);
+
+  const SortIcon = sortBy === "none" ? ChevronDown : sortOrder === "asc" ? ChevronUp : ChevronDown;
 
   return (
     <section className="mt-10">
@@ -99,8 +128,45 @@ export function CatalogView() {
       </div>
 
       <div className="mt-5 flex flex-wrap justify-end gap-3">
-        <FilterButton label="Категория" icon />
-        <FilterButton label="Сортировка" icon />
+        <div className="relative" ref={sortMenuRef}>
+          <button
+            type="button"
+            className={clsx(
+              "hover-jolt hover-outline-scan flex items-center gap-2 rounded-sm border border-line px-4 py-2 text-[17px]",
+              sortBy === "none" ? "text-muted" : "border-accent text-accent",
+            )}
+            onClick={() => setIsSortMenuOpen((current) => !current)}
+          >
+            <span>{currentSortLabel}</span>
+            <SortIcon size={16} />
+          </button>
+
+          {isSortMenuOpen ? (
+            <div className="absolute right-0 top-full z-20 mt-2 min-w-[170px] rounded-sm border border-line bg-bg p-1.5 shadow-lg">
+              {sortOptions.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  className={clsx(
+                    "hover-jolt hover-outline-scan flex w-full items-center justify-between rounded-sm px-3 py-2 text-left text-sm",
+                    sortBy === option.value
+                      ? "text-accent"
+                      : "text-muted",
+                  )}
+                  onClick={() => {
+                    cycleSortBy(option.value);
+                    setIsSortMenuOpen(false);
+                  }}
+                >
+                  <span>{option.label}</span>
+                  {sortBy === option.value ? (
+                    sortOrder === "asc" ? <ChevronUp size={14} /> : <ChevronDown size={14} />
+                  ) : null}
+                </button>
+              ))}
+            </div>
+          ) : null}
+        </div>
       </div>
 
       <div className="mt-9 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
@@ -124,39 +190,39 @@ export function CatalogView() {
       {!loading && totalPages > 1 ? (
         <div className="mt-4">
           <div className="flex flex-wrap items-center justify-center gap-2">
-          <button
-            type="button"
-            className="hover-jolt hover-outline-scan rounded-sm border border-line px-3 py-2 text-sm text-muted disabled:cursor-not-allowed disabled:opacity-50"
-            onClick={() => setPage(Math.max(1, page - 1))}
-            disabled={page === 1}
-          >
-            Назад
-          </button>
-
-          {visiblePages.map((pageNumber) => (
             <button
-              key={pageNumber}
               type="button"
-              className={clsx(
-                "hover-jolt hover-outline-scan rounded-sm border px-3 py-2 text-sm",
-                pageNumber === page
-                  ? "border-accent text-accent"
-                  : "border-line text-muted",
-              )}
-              onClick={() => setPage(pageNumber)}
+              className="hover-jolt hover-outline-scan rounded-sm border border-line px-3 py-2 text-sm text-muted disabled:cursor-not-allowed disabled:opacity-50"
+              onClick={() => setPage(Math.max(1, page - 1))}
+              disabled={page === 1}
             >
-              {pageNumber}
+              Назад
             </button>
-          ))}
 
-          <button
-            type="button"
-            className="hover-jolt hover-outline-scan rounded-sm border border-line px-3 py-2 text-sm text-muted disabled:cursor-not-allowed disabled:opacity-50"
-            onClick={() => setPage(Math.min(totalPages, page + 1))}
-            disabled={page === totalPages}
-          >
-            Вперед
-          </button>
+            {visiblePages.map((pageNumber) => (
+              <button
+                key={pageNumber}
+                type="button"
+                className={clsx(
+                  "hover-jolt hover-outline-scan rounded-sm border px-3 py-2 text-sm",
+                  pageNumber === page
+                    ? "border-accent text-accent"
+                    : "border-line text-muted",
+                )}
+                onClick={() => setPage(pageNumber)}
+              >
+                {pageNumber}
+              </button>
+            ))}
+
+            <button
+              type="button"
+              className="hover-jolt hover-outline-scan rounded-sm border border-line px-3 py-2 text-sm text-muted disabled:cursor-not-allowed disabled:opacity-50"
+              onClick={() => setPage(Math.min(totalPages, page + 1))}
+              disabled={page === totalPages}
+            >
+              Вперед
+            </button>
           </div>
         </div>
       ) : null}
