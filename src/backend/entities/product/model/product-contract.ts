@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const productCategorySchema = z.enum(["ALL", "CLOTHES", "SHOES", "ACCESSORIES"]);
+export const productSizeSchema = z.enum(["s", "m", "l", "xl", "xxl"]);
 export const catalogCategoryQuerySchema = z.enum(["all", "clothes", "shoes", "accessories"]);
 export const catalogSortByQuerySchema = z.enum(["none", "price", "name"]);
 export const catalogSortOrderQuerySchema = z.enum(["asc", "desc"]);
@@ -12,6 +13,7 @@ export const productSchema = z.object({
   price: z.number().int().nonnegative(),
   category: productCategorySchema,
   imageUrl: z.string().url().nullable(),
+  availableSizes: z.array(productSizeSchema).min(3).max(5),
 });
 
 export const productsSchema = z.array(productSchema);
@@ -37,6 +39,7 @@ export const paginatedProductsSchema = z.object({
 });
 
 export type ProductDto = z.infer<typeof productSchema>;
+export type ProductSize = z.infer<typeof productSizeSchema>;
 export type ProductsQuery = z.infer<typeof productsQuerySchema>;
 export type PaginatedProductsDto = z.infer<typeof paginatedProductsSchema>;
 export type CatalogCategoryQuery = z.infer<typeof catalogCategoryQuerySchema>;

@@ -1,3 +1,5 @@
+export type ProductSize = "s" | "m" | "l" | "xl" | "xxl";
+
 export type Product = {
   id: number;
   slug: string;
@@ -5,4 +7,5 @@ export type Product = {
   price: number;
   category: "ALL" | "CLOTHES" | "SHOES" | "ACCESSORIES";
   imageUrl: string | null;
+  availableSizes: ProductSize[];
 };

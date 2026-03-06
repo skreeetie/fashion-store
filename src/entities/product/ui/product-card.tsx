@@ -5,15 +5,18 @@ import Image from "next/image";
 import clsx from "clsx";
 import { toggleItemInCart, selectIsProductInCart } from "@/entities/cart/model/cart-slice";
 import { useAppDispatch, useAppSelector } from "@/shared/lib/hooks/redux";
-import { Product } from "../model/types";
+import { Product, ProductSize } from "../model/types";
 import { formatPrice } from "@/shared/lib/format-price";
 
 type ProductCardProps = {
   product: Product;
 };
 
+const ALL_SIZES: ProductSize[] = ["s", "m", "l", "xl", "xxl"];
+
 export function ProductCard({ product }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const [selectedSize, setSelectedSize] = useState<ProductSize>(product.availableSizes[0] ?? "m");
   const dispatch = useAppDispatch();
   const isInCart = useAppSelector(selectIsProductInCart(product.id));
 
@@ -38,6 +41,29 @@ export function ProductCard({ product }: ProductCardProps) {
       <div className="mt-3 text-center">
         <h3 className="text-[clamp(17px,1.6vw,36px)] font-medium text-text">{product.name}</h3>
         <p className="mt-1 text-[clamp(17px,1.6vw,36px)] text-muted">{formatPrice(product.price)}</p>
+      </div>
+      <div className="mt-3 flex justify-center gap-1.5">
+        {ALL_SIZES.map((size) => {
+          const isAvailable = product.availableSizes.includes(size);
+          const isActive = selectedSize === size;
+
+          return (
+            <button
+              key={size}
+              type="button"
+              disabled={!isAvailable}
+              aria-pressed={isActive}
+              className={clsx(
+                "min-w-9 rounded-sm border px-2 py-1 text-xs uppercase tracking-[0.06em] transition-colors",
+                isActive ? "border-text bg-text text-background" : "border-line text-muted",
+                !isAvailable && "cursor-not-allowed border-line/60 text-muted/40 line-through",
+              )}
+              onClick={() => setSelectedSize(size)}
+            >
+              {size}
+            </button>
+          );
+        })}
       </div>
       <button
         className={clsx(

@@ -8,6 +8,7 @@ type ProductRow = {
   price: number;
   category: ProductDto["category"];
   imageUrl: string | null;
+  availableSizes: ProductDto["availableSizes"];
 };
 
 type GetProductsPageParams = {
@@ -49,6 +50,7 @@ export async function getProductsPageFromDb({
       price: true,
       category: true,
       imageUrl: true,
+      availableSizes: true,
     },
   })) as ProductRow[];
 
@@ -59,6 +61,7 @@ export async function getProductsPageFromDb({
     price: item.price,
     category: item.category,
     imageUrl: item.imageUrl,
+    availableSizes: item.availableSizes,
   }));
 }
 

@@ -4,6 +4,8 @@ const prisma = new PrismaClient();
 
 const PEXELS_API_KEY = process.env.PEXELS_API_KEY;
 const TARGET_COUNT = 168;
+const ALL_SIZES = ["s", "m", "l", "xl", "xxl"];
+const MISSING_SIZES_TARGET = Math.round(TARGET_COUNT * 0.3);
 
 const productDefinitions = [
   { type: "Кардиган", category: "CLOTHES", query: "fashion cardigan women model" },
@@ -107,6 +109,22 @@ function makeSlug(definition, index) {
   return `${typeSlug}-${index + 1}`;
 }
 
+function getAvailableSizes(index) {
+  // Evenly spread products with missing sizes and keep deterministic output.
+  const shuffledIndex = (index * 37) % TARGET_COUNT;
+  if (shuffledIndex >= MISSING_SIZES_TARGET) {
+    return ALL_SIZES;
+  }
+
+  const missingCount = index % 2 === 0 ? 1 : 2;
+  const start = index % ALL_SIZES.length;
+  const missing = new Set(
+    Array.from({ length: missingCount }, (_, offset) => ALL_SIZES[(start + offset) % ALL_SIZES.length]),
+  );
+
+  return ALL_SIZES.filter((size) => !missing.has(size));
+}
+
 async function main() {
   const itemsPerType = Math.ceil(TARGET_COUNT / productDefinitions.length);
   const imagePoolByType = new Map();
@@ -127,6 +145,7 @@ async function main() {
       price: calcPrice(definition.category, index),
       category: definition.category,
       imageUrl,
+      availableSizes: getAvailableSizes(index),
     };
   });
 
