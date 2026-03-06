@@ -55,7 +55,7 @@ export function ProductCard({ product }: ProductCardProps) {
               aria-pressed={isActive}
               className={clsx(
                 "min-w-9 rounded-sm border px-2 py-1 text-xs uppercase tracking-[0.06em] transition-colors",
-                isActive ? "border-text bg-text text-background" : "border-line text-muted",
+                isActive ? "border-text bg-text text-bg" : "border-line text-muted",
                 !isAvailable && "cursor-not-allowed border-line/60 text-muted/40 line-through",
               )}
               onClick={() => setSelectedSize(size)}
