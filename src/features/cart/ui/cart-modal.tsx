@@ -95,6 +95,7 @@ export function CartModal() {
 
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-text">{item.name}</p>
+                    <p className="text-xs uppercase tracking-[0.06em] text-muted">Размер: {item.size}</p>
                     <p className="text-sm text-muted">{formatPrice(item.price)}</p>
                   </div>
 
