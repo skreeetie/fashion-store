@@ -15,12 +15,12 @@ export function ThemeToggleButton() {
   if (!mounted) {
     return (
       <button
-        className="hover-jolt hover-outline-scan rounded-sm border border-line p-2.5 text-text"
+        className="hover-jolt hover-outline-scan rounded-sm border border-line p-2 text-text sm:p-2.5"
         type="button"
         aria-label="Переключить тему"
         onClick={toggleTheme}
       >
-        <Moon className="theme-icon-flicker" size={18} />
+        <Moon className="theme-icon-flicker" size={17} />
       </button>
     );
   }
@@ -30,12 +30,12 @@ export function ThemeToggleButton() {
 
   return (
     <button
-      className="hover-jolt hover-outline-scan rounded-sm border border-line p-2.5 text-text"
+      className="hover-jolt hover-outline-scan rounded-sm border border-line p-2 text-text sm:p-2.5"
       type="button"
       aria-label={isDark ? "Переключить на светлую тему" : "Переключить на тёмную тему"}
       onClick={toggleTheme}
     >
-      <Icon className="theme-icon-flicker" size={18} />
+      <Icon className="theme-icon-flicker" size={17} />
     </button>
   );
 }

@@ -4,9 +4,9 @@ import { CatalogView } from "@/widgets/catalog/ui/catalog-view";
 
 export function HomePage() {
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen pt-[58px] sm:pt-0">
       <Header />
-      <div className="mx-auto max-w-[1800px] px-6 pb-8 sm:px-10 sm:pb-10 lg:px-16">
+      <div className="mx-auto max-w-[1800px] px-3 pb-8 sm:px-10 sm:pb-10 lg:px-16">
         <Suspense fallback={<div className="mt-10 h-[420px] animate-pulse rounded-sm border border-line" />}>
           <CatalogView />
         </Suspense>

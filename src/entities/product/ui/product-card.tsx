@@ -38,11 +38,11 @@ export function ProductCard({ product }: ProductCardProps) {
           <div className="h-full w-full bg-gradient-to-br from-[#f2ede6] to-[#dfd7cb] dark:from-[#404048] dark:to-[#2a2a30]" />
         )}
       </div>
-      <div className="mt-3 text-center">
-        <h3 className="text-[clamp(17px,1.6vw,36px)] font-medium text-text">{product.name}</h3>
-        <p className="mt-1 text-[clamp(17px,1.6vw,36px)] text-muted">{formatPrice(product.price)}</p>
+      <div className="mt-2 text-center sm:mt-3">
+        <h3 className="text-base font-medium leading-snug text-text sm:text-[clamp(17px,1.6vw,36px)]">{product.name}</h3>
+        <p className="mt-1 text-base text-muted sm:text-[clamp(17px,1.6vw,36px)]">{formatPrice(product.price)}</p>
       </div>
-      <div className="mt-3 flex justify-center gap-1.5">
+      <div className="mt-2.5 flex justify-center gap-1 sm:mt-3 sm:gap-1.5">
         {ALL_SIZES.map((size) => {
           const isAvailable = product.availableSizes.includes(size);
           const isActive = selectedSize === size;
@@ -54,7 +54,7 @@ export function ProductCard({ product }: ProductCardProps) {
               disabled={!isAvailable}
               aria-pressed={isActive}
               className={clsx(
-                "min-w-9 rounded-sm border px-2 py-1 text-xs uppercase tracking-[0.06em] transition-colors",
+                "min-w-8 rounded-sm border px-1.5 py-1 text-[11px] uppercase tracking-[0.06em] transition-colors sm:min-w-9 sm:px-2 sm:text-xs",
                 isActive ? "border-text bg-text text-bg" : "border-line text-muted",
                 !isAvailable && "cursor-not-allowed border-line/60 text-muted/40 line-through",
               )}
@@ -67,7 +67,7 @@ export function ProductCard({ product }: ProductCardProps) {
       </div>
       <button
         className={clsx(
-          "hover-jolt hover-outline-scan mt-3 rounded-sm border px-4 py-2 text-sm tracking-[0.08em]",
+          "hover-jolt hover-outline-scan mt-2.5 rounded-sm border px-3 py-2 text-base tracking-[0.04em] sm:mt-3 sm:px-4 sm:text-sm sm:tracking-[0.08em]",
           isInCart ? "border-accent text-accent" : "border-line text-text",
         )}
         type="button"

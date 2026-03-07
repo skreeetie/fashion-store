@@ -102,19 +102,19 @@ export function CatalogView() {
   const SortIcon = sortBy === "none" ? ChevronDown : sortOrder === "asc" ? ChevronUp : ChevronDown;
 
   return (
-    <section className="mt-10">
-      <h1 className="catalog-title text-center text-[clamp(56px,9vw,128px)] uppercase leading-none tracking-[0.04em] text-text">
+    <section className="mt-6 sm:mt-10">
+      <h1 className="catalog-title text-center text-[clamp(42px,9vw,128px)] uppercase leading-none tracking-[0.04em] text-text">
         Каталог
       </h1>
 
-      <div className="mt-10 border-y border-line py-5">
-        <div className="flex flex-wrap items-center justify-center gap-8">
+      <div className="mt-6 border-y border-line py-4 sm:mt-10 sm:py-5">
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 sm:gap-8">
           {categories.map((item) => (
             <button
               key={item.value}
               type="button"
               className={clsx(
-                "hover-jolt hover-outline-scan border-b px-2 pb-1 text-[17px]",
+                "hover-jolt hover-outline-scan border-b px-1.5 pb-1 text-sm sm:px-2 sm:text-[17px]",
                 item.value === category
                   ? "border-accent font-medium text-accent"
                   : "border-transparent text-muted",
@@ -127,12 +127,12 @@ export function CatalogView() {
         </div>
       </div>
 
-      <div className="mt-5 flex flex-wrap justify-end gap-3">
+      <div className="mt-4 flex flex-wrap justify-end gap-2.5 sm:mt-5 sm:gap-3">
         <div className="relative" ref={sortMenuRef}>
           <button
             type="button"
             className={clsx(
-              "hover-jolt hover-outline-scan flex items-center gap-2 rounded-sm border border-line px-4 py-2 text-[17px]",
+              "hover-jolt hover-outline-scan flex items-center gap-2 rounded-sm border border-line px-3 py-1.5 text-sm sm:px-4 sm:py-2 sm:text-[17px]",
               sortBy === "none" ? "text-muted" : "border-accent text-accent",
             )}
             onClick={() => setIsSortMenuOpen((current) => !current)}
@@ -142,7 +142,7 @@ export function CatalogView() {
           </button>
 
           {isSortMenuOpen ? (
-            <div className="absolute right-0 top-full z-20 mt-2 min-w-[170px] rounded-sm border border-line bg-bg p-1.5 shadow-lg">
+            <div className="absolute right-0 top-full z-20 mt-2 min-w-[150px] rounded-sm border border-line bg-bg p-1.5 shadow-lg sm:min-w-[170px]">
               {sortOptions.map((option) => (
                 <button
                   key={option.value}
@@ -169,7 +169,7 @@ export function CatalogView() {
         </div>
       </div>
 
-      <div className="mt-9 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-6 grid grid-cols-2 gap-x-3 gap-y-7 sm:mt-9 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-3">
         {loading
           ? Array.from({ length: ITEMS_PER_PAGE }).map((_, idx) => <ProductCardSkeleton key={idx} />)
           : data?.products.map((product) => <ProductCard key={product.id} product={product} />)}
@@ -182,21 +182,22 @@ export function CatalogView() {
       ) : null}
 
       {!loading && total > 0 ? (
-        <p className="mt-10 text-center text-sm text-muted">
+        <p className="mt-7 text-center text-xs text-muted sm:mt-10 sm:text-sm">
           Показано: {shownUntil} из {total}. Осталось: {remaining}
         </p>
       ) : null}
 
       {!loading && totalPages > 1 ? (
-        <div className="mt-4">
-          <div className="flex flex-wrap items-center justify-center gap-2">
+        <div className="mt-4 overflow-x-hidden">
+          <div className="flex flex-nowrap items-center justify-center gap-1.5 sm:gap-2">
             <button
               type="button"
-              className="hover-jolt hover-outline-scan rounded-sm border border-line px-3 py-2 text-sm text-muted disabled:cursor-not-allowed disabled:opacity-50"
+              className="hover-jolt hover-outline-scan min-w-8 rounded-sm border border-line px-2 py-1.5 text-xs text-muted disabled:cursor-not-allowed disabled:opacity-50 sm:min-w-0 sm:px-3 sm:py-2 sm:text-sm"
               onClick={() => setPage(Math.max(1, page - 1))}
               disabled={page === 1}
             >
-              Назад
+              <span className="sm:hidden">←</span>
+              <span className="hidden sm:inline">Назад</span>
             </button>
 
             {visiblePages.map((pageNumber) => (
@@ -204,7 +205,7 @@ export function CatalogView() {
                 key={pageNumber}
                 type="button"
                 className={clsx(
-                  "hover-jolt hover-outline-scan rounded-sm border px-3 py-2 text-sm",
+                  "hover-jolt hover-outline-scan min-w-8 rounded-sm border px-2 py-1.5 text-xs sm:px-3 sm:py-2 sm:text-sm",
                   pageNumber === page
                     ? "border-accent text-accent"
                     : "border-line text-muted",
@@ -217,11 +218,12 @@ export function CatalogView() {
 
             <button
               type="button"
-              className="hover-jolt hover-outline-scan rounded-sm border border-line px-3 py-2 text-sm text-muted disabled:cursor-not-allowed disabled:opacity-50"
+              className="hover-jolt hover-outline-scan min-w-8 rounded-sm border border-line px-2 py-1.5 text-xs text-muted disabled:cursor-not-allowed disabled:opacity-50 sm:min-w-0 sm:px-3 sm:py-2 sm:text-sm"
               onClick={() => setPage(Math.min(totalPages, page + 1))}
               disabled={page === totalPages}
             >
-              Вперед
+              <span className="sm:hidden">→</span>
+              <span className="hidden sm:inline">Вперед</span>
             </button>
           </div>
         </div>
