@@ -39,7 +39,12 @@ export function ProductCard({ product }: ProductCardProps) {
         )}
       </div>
       <div className="mt-2 text-center sm:mt-3">
-        <h3 className="text-base font-medium leading-snug text-text sm:text-[clamp(17px,1.6vw,36px)]">{product.name}</h3>
+        <h3
+          title={product.name}
+          className="truncate text-base font-medium leading-snug text-text sm:text-[clamp(17px,1.6vw,36px)]"
+        >
+          {product.name}
+        </h3>
         <p className="mt-1 text-base text-muted sm:text-[clamp(17px,1.6vw,36px)]">{formatPrice(product.price)}</p>
       </div>
       <div className="mt-2.5 grid w-full grid-cols-5 gap-1 sm:mt-3 sm:gap-1.5">
