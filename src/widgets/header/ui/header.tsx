@@ -59,7 +59,7 @@ export function Header() {
   }, [isMenuOpen]);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-line bg-bg backdrop-blur-md sm:sticky sm:top-0 sm:z-40 sm:bg-bg/92">
+    <header className="sticky top-0 z-40 border-b border-line bg-bg/92 backdrop-blur-md">
       <div className="mx-auto hidden max-w-[1800px] flex-wrap items-center justify-between gap-4 px-6 py-6 sm:flex sm:px-10 lg:px-16">
         <nav className="flex flex-wrap items-center gap-6 lg:gap-8">
           {leftLinks.map((link) => (

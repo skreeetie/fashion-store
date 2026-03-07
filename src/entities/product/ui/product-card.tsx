@@ -42,7 +42,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <h3 className="text-base font-medium leading-snug text-text sm:text-[clamp(17px,1.6vw,36px)]">{product.name}</h3>
         <p className="mt-1 text-base text-muted sm:text-[clamp(17px,1.6vw,36px)]">{formatPrice(product.price)}</p>
       </div>
-      <div className="mt-2.5 flex justify-center gap-1 sm:mt-3 sm:gap-1.5">
+      <div className="mt-2.5 grid w-full grid-cols-5 gap-1 sm:mt-3 sm:gap-1.5">
         {ALL_SIZES.map((size) => {
           const isAvailable = product.availableSizes.includes(size);
           const isActive = selectedSize === size;
@@ -54,7 +54,8 @@ export function ProductCard({ product }: ProductCardProps) {
               disabled={!isAvailable}
               aria-pressed={isActive}
               className={clsx(
-                "min-w-8 rounded-sm border px-1.5 py-1 text-[11px] uppercase tracking-[0.06em] transition-colors sm:min-w-9 sm:px-2 sm:text-xs",
+                "w-full rounded-sm border px-1 py-1 text-[10px] uppercase tracking-[0.04em] transition-colors sm:px-2 sm:text-xs sm:tracking-[0.06em]",
+                size === "xxl" && "px-[3px] pr-[5px] text-[9px] tracking-[0] sm:px-2 sm:text-[11px]",
                 isActive ? "border-text bg-text text-bg" : "border-line text-muted",
                 !isAvailable && "cursor-not-allowed border-line/60 text-muted/40 line-through",
               )}
