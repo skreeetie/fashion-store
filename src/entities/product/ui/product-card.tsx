@@ -25,6 +25,11 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <article className="group flex flex-col">
       <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-card-bg">
+        {product.isNew ? (
+          <span className="absolute left-2 top-2 z-10 rounded-sm border border-accent/70 bg-bg/85 px-2 py-1 text-[10px] uppercase tracking-[0.08em] text-accent backdrop-blur-sm sm:left-3 sm:top-3 sm:text-xs">
+            New Drop
+          </span>
+        ) : null}
         {product.imageUrl ? (
           <Image
             src={product.imageUrl}

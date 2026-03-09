@@ -14,6 +14,7 @@ export const productSchema = z.object({
   category: productCategorySchema,
   imageUrl: z.string().url().nullable(),
   availableSizes: z.array(productSizeSchema).min(3).max(5),
+  isNew: z.boolean().optional(),
 });
 
 export const productsSchema = z.array(productSchema);

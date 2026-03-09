@@ -8,4 +8,5 @@ export type Product = {
   category: "ALL" | "CLOTHES" | "SHOES" | "ACCESSORIES";
   imageUrl: string | null;
   availableSizes: ProductSize[];
+  isNew?: boolean;
 };

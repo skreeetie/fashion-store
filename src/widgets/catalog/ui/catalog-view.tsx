@@ -24,7 +24,12 @@ const sortOptions: { label: string; value: Exclude<CatalogSortBy, "none"> }[] = 
   { label: "Название", value: "name" },
 ];
 
-export function CatalogView() {
+type CatalogViewProps = {
+  title?: string;
+  source?: "catalog" | "men" | "women" | "new";
+};
+
+export function CatalogView({ title = "Каталог", source = "catalog" }: CatalogViewProps) {
   const { page, setPage, category, setCategory, sortBy, sortOrder, cycleSortBy } = useCatalogQuery({
     defaultPage: 1,
     defaultCategory: "all",
@@ -39,6 +44,7 @@ export function CatalogView() {
     category,
     sortBy,
     sortOrder,
+    source,
   });
   const loading = isLoading || isFetching;
   const totalPages = data?.meta.totalPages ?? 0;
@@ -104,7 +110,7 @@ export function CatalogView() {
   return (
     <section className="mt-6 sm:mt-10">
       <h1 className="catalog-title text-center text-[clamp(42px,9vw,128px)] uppercase leading-none tracking-[0.04em] text-text">
-        Каталог
+        {title}
       </h1>
 
       <div className="mt-6 border-y border-line py-4 sm:mt-10 sm:py-5">

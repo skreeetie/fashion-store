@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Montserrat } from "next/font/google";
 import { AppProviders } from "./providers";
+import { Header } from "@/widgets/header/ui/header";
 import "./globals.css";
 
 const displayFont = Cormorant_Garamond({
@@ -28,7 +29,10 @@ export default function RootLayout({
   return (
     <html lang="ru" suppressHydrationWarning>
       <body className={`${displayFont.variable} ${bodyFont.variable} antialiased`}>
-        <AppProviders>{children}</AppProviders>
+        <AppProviders>
+          <Header />
+          {children}
+        </AppProviders>
       </body>
     </html>
   );
