@@ -9,6 +9,7 @@ import clsx from "clsx";
 import { Menu, X } from "lucide-react";
 
 const leftLinks = [
+  { label: "Главная", href: "/" },
   { label: "Новинки", href: "/new" },
   { label: "Женщинам", href: "/women" },
   { label: "Мужчинам", href: "/men" },
