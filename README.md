@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Fashion Store
 
-## Getting Started
+Интернет-магазин на Next.js с каталогом товаров, фильтрами/сортировкой, роутами под разные витрины (`/`, `/men`, `/women`, `/new`), корзиной и серверным API.
 
-First, run the development server:
+## Стек
 
+- Next.js 16 (App Router)
+- React 19 + TypeScript
+- Tailwind CSS v4
+- Redux Toolkit + RTK Query
+- Prisma + PostgreSQL
+- Zod (валидация контрактов и query-параметров)
+
+## Команды
+
+Все команды из `package.json`:
+
+- `pnpm dev` - запуск локальной разработки
+- `pnpm build` - генерация Prisma Client + production build Next.js
+- `pnpm start` - запуск production-сборки
+- `pnpm lint` - запуск ESLint
+- `pnpm db:generate` - `prisma generate`
+- `pnpm db:push` - `prisma db push`
+- `pnpm db:migrate` - `prisma migrate dev`
+- `pnpm db:deploy` - `prisma migrate deploy`
+- `pnpm db:seed` - заполнение БД тестовыми товарами
+- `pnpm db:studio` - запуск Prisma Studio
+
+## Быстрый старт
+
+1. Установить зависимости:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
+```
+2. Подготовить `.env` (`DATABASE_URL`, `DIRECT_URL`, при необходимости `PEXELS_API_KEY`, `NEXT_PUBLIC_API_ORIGIN`).
+3. Применить миграции и сиды (опционально):
+```bash
+pnpm db:migrate
+pnpm db:seed
+```
+4. Запустить проект:
+```bash
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Основные фичи
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Каталог товаров с пагинацией
+- Фильтрация по категориям и сортировка по цене/названию
+- Отдельные витрины:
+  - `/men` (мужская подборка)
+  - `/women` (женская подборка)
+  - `/new` (новинки с визуальным бейджем в карточке)
+- Корзина на Redux с синхронизацией в `sessionStorage`
+- Переключение светлой/тёмной темы (с сохранением в `localStorage`)
+- Кастомная страница `404`
+- Общие `Header` и `Footer` в layout
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## API
 
-## Learn More
+Основные эндпоинты:
 
-To learn more about Next.js, take a look at the following resources:
+- `GET /api/products`
+- `GET /api/products/men`
+- `GET /api/products/women`
+- `GET /api/products/new`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Поддерживаемые query-параметры:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `page`
+- `perPage`
+- `category` (`all | clothes | shoes | accessories`)
+- `sortBy` (`none | price | name`)
+- `sortOrder` (`asc | desc`)
 
-## Deploy on Vercel
+## Навигация (frontend)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `/` - главная витрина
+- `/new` - новинки
+- `/women` - женская витрина
+- `/men` - мужская витрина
+- `/about` - страница о проекте
+- `/contact` - контакты

@@ -14,7 +14,10 @@ const leftLinks = [
   { label: "Женщинам", href: "/women" },
   { label: "Мужчинам", href: "/men" },
 ];
-const rightLinks = ["О нас", "Контакты"];
+const rightLinks = [
+  { label: "О нас", href: "/about" },
+  { label: "Контакты", href: "/contact" },
+];
 
 type NavLinkProps = {
   label: string;
@@ -88,13 +91,26 @@ export function Header() {
         <div className="flex items-center gap-7">
           <nav className="flex flex-wrap items-center gap-6 lg:gap-8">
             {rightLinks.map((link) => (
-              <button
-                key={link}
-                type="button"
-                className="hover-jolt text-[13px] uppercase tracking-[0.12em] text-muted sm:text-sm"
-              >
-                {link}
-              </button>
+              link.href ? (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className={clsx(
+                    "hover-jolt border-b px-0.5 pb-0.5 text-[13px] uppercase tracking-[0.12em] sm:text-sm",
+                    pathname === link.href ? "border-accent text-accent" : "border-transparent text-muted",
+                  )}
+                >
+                  {link.label}
+                </Link>
+              ) : (
+                <button
+                  key={link.label}
+                  type="button"
+                  className="hover-jolt text-[13px] uppercase tracking-[0.12em] text-muted sm:text-sm"
+                >
+                  {link.label}
+                </button>
+              )
             ))}
           </nav>
           <ThemeToggleButton />
@@ -133,9 +149,27 @@ export function Header() {
             </nav>
             <div className="grid grid-cols-2 gap-x-3 gap-y-2 border-t border-line pt-2">
               {rightLinks.map((link) => (
-                <button key={link} type="button" className="hover-jolt text-left text-xs uppercase tracking-[0.12em] text-muted">
-                  {link}
-                </button>
+                link.href ? (
+                  <Link
+                    key={link.label}
+                    href={link.href}
+                    onClick={() => setIsMenuOpen(false)}
+                    className={clsx(
+                      "hover-jolt border-b px-0.5 pb-0.5 text-left text-xs uppercase tracking-[0.12em]",
+                      pathname === link.href ? "border-accent text-accent" : "border-transparent text-muted",
+                    )}
+                  >
+                    {link.label}
+                  </Link>
+                ) : (
+                  <button
+                    key={link.label}
+                    type="button"
+                    className="hover-jolt text-left text-xs uppercase tracking-[0.12em] text-muted"
+                  >
+                    {link.label}
+                  </button>
+                )
               ))}
             </div>
           </div>
