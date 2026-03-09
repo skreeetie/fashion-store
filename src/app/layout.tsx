@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Montserrat } from "next/font/google";
 import { AppProviders } from "./providers";
 import { Header } from "@/widgets/header/ui/header";
+import { Footer } from "@/widgets/footer/ui/footer";
 import "./globals.css";
 
 const displayFont = Cormorant_Garamond({
@@ -32,6 +33,7 @@ export default function RootLayout({
         <AppProviders>
           <Header />
           {children}
+          <Footer />
         </AppProviders>
       </body>
     </html>
